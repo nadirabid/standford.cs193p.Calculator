@@ -57,22 +57,32 @@ class CalculatorBrain: CustomStringConvertible {
     
     var program: AnyObject {
         get {
-            return opStack.map { $0.description }
+            var prog = [String:AnyObject]()
+            prog["opStack"] = opStack.map { $0.description }
+            prog["variableValues"] = variableValues
+            
+            return prog
         }
         set {
-            if let opSymbols = newValue as? [String] {
-                var newOpStack = [Op]()
+            if let prog = newValue as? [String:AnyObject] {
+                if let opSymbols = prog["opStack"] as? [String] {
+                    var newOpStack = [Op]()
                 
-                for opSymbol in opSymbols {
-                    if let op = knownOps[opSymbol] {
-                        newOpStack.append(op)
+                    for opSymbol in opSymbols {
+                        if let op = knownOps[opSymbol] {
+                            newOpStack.append(op)
+                        }
+                        else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
+                            newOpStack.append(Op.Operand(operand))
+                        }
                     }
-                    else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
-                        newOpStack.append(Op.Operand(operand))
-                    }
+                    
+                    opStack = newOpStack
                 }
                 
-                opStack = newOpStack
+                if let varValues = prog["variableValues"] as? [String:Double] {
+                    variableValues = varValues
+                }
             }
         }
     }
@@ -223,6 +233,14 @@ class CalculatorBrain: CustomStringConvertible {
     
     func resetVariableValues() -> Double? {
         variableValues.removeAll()
+        return evaluate()
+    }
+    
+    func undoLastOp() -> Double? {
+        if let lastOp = opStack.popLast() {
+            lastOp.description
+        }
+        
         return evaluate()
     }
     

@@ -9,6 +9,17 @@
 import UIKit
 
 class GraphViewController: UIViewController {
+    @IBOutlet weak var graphView: GraphView! {
+        didSet {
+            graphView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: "scale:"))
+        }
+    }
     
-
+    func scale(gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .Changed {
+            graphView.scale *= gesture.scale
+            print(graphView.scale)
+            gesture.scale = 1
+        }
+    }
 }

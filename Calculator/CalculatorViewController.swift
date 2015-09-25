@@ -29,15 +29,21 @@ class CalculatorViewController: UIViewController {
         historyValue = brain.description
     }
     
-    @IBAction func removeLastDigit() {
-        if let displayText = display.text where displayText.characters.count > 1 {
-            display.text = displayText.substringToIndex(displayText.endIndex.predecessor())
+    @IBAction func backspaceOrUndo() {
+        if (userIsInTheMiddleOfTyping) {
+            if let displayText = display.text where displayText.characters.count > 1 {
+                display.text = displayText.substringToIndex(displayText.endIndex.predecessor())
+                userIsInTheMiddleOfTyping = true
+            }
+            else {
+                display.text = " "
+                userIsInTheMiddleOfTyping = false
+            }
         }
         else {
-            display.text = " "
+            displayValue = brain.undoLastOp()
         }
         
-        userIsInTheMiddleOfTyping = true
         historyValue = brain.description
     }
 
