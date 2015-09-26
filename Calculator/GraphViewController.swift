@@ -10,16 +10,35 @@ import UIKit
 
 class GraphViewController: UIViewController, GraphViewDataSource, UIPopoverPresentationControllerDelegate {
     private var brain = CalculatorBrain()
+    private var defaults = NSUserDefaults.standardUserDefaults()
     
     @IBOutlet weak var graphView: GraphView! {
         didSet {
             graphView.graphViewDataSource = self
+            
+            if let config = defaults.objectForKey("GraphView.Configuration") as? [String:CGFloat] {
+                if let scale = config["scale"] {
+                    graphView.scale = scale
+                }
+                
+                if let originTranslationX = config["originTranslationX"] {
+                    graphView.originTranslation.x = originTranslationX
+                }
+                
+                if let originTranslationY = config["originTranslationY"] {
+                    graphView.originTranslation.y = originTranslationY
+                }
+            }
+            
         }
     }
     
     @IBAction func pan(gesture: UIPanGestureRecognizer) {
         switch gesture.state {
-        case .Ended: fallthrough
+        case .Ended:
+            defaults.setObject(graphViewConfiguration, forKey: "GraphView.Configuration")
+            defaults.synchronize()
+            fallthrough
         case .Changed:
             let translation = gesture.translationInView(graphView)
             graphView.originTranslation = CGPoint(x: graphView.originTranslation.x + translation.x, y: graphView.originTranslation.y + translation.y)
@@ -36,6 +55,8 @@ class GraphViewController: UIViewController, GraphViewDataSource, UIPopoverPrese
                 let tapLocation = gesture.locationInView(graphView)
                 graphView.originTranslation = CGPoint(x: tapLocation.x - graphView.bounds.width/2, y: tapLocation.y - graphView.bounds.height/2)
             }
+            defaults.setObject(graphViewConfiguration, forKey: "GraphView.Configuration")
+            defaults.synchronize()
         default: break
         }
     }
@@ -44,6 +65,42 @@ class GraphViewController: UIViewController, GraphViewDataSource, UIPopoverPrese
         if gesture.state == .Changed {
             graphView.scale *= gesture.scale
             gesture.scale = 1
+        }
+        
+        switch gesture.state {
+        case .Changed:
+            graphView.scale *= gesture.scale
+            gesture.scale = 1
+        case .Ended:
+            defaults.setObject(graphViewConfiguration, forKey: "GraphView.Configuration")
+            defaults.synchronize()
+        default: break
+        }
+    }
+    
+    var graphViewConfiguration: AnyObject {
+        get {
+            
+            var config = [String:CGFloat]()
+            config["scale"] = graphView.scale
+            config["originTranslationX"] = graphView.originTranslation.x
+            config["originTranslationY"] = graphView.originTranslation.y
+            return config
+        }
+        set {
+            if let config = newValue as? [String:CGFloat] {
+                if let scale = config["scale"] {
+                    graphView.scale = scale
+                }
+                
+                if let originTranslationX = config["originTranslationX"] {
+                    graphView.originTranslation.x = originTranslationX
+                }
+                
+                if let originTranslationY = config["originTranslationY"] {
+                    graphView.originTranslation.y = originTranslationY
+                }
+            }
         }
     }
     
