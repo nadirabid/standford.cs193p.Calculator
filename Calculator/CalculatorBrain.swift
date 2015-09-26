@@ -75,6 +75,9 @@ class CalculatorBrain: CustomStringConvertible {
                         else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
                             newOpStack.append(Op.Operand(operand))
                         }
+                        else {
+                            newOpStack.append(Op.VariableOperand(opSymbol))
+                        }
                     }
                     
                     opStack = newOpStack

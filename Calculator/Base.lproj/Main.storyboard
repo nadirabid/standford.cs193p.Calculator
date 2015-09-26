@@ -292,7 +292,7 @@
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
-                                    <segue destination="Yml-dY-u1w" kind="showDetail" id="5pq-x0-zCw"/>
+                                    <segue destination="Yml-dY-u1w" kind="showDetail" identifier="Show Graph" id="5pq-x0-zCw"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ye3-tp-KB2">
@@ -495,6 +495,12 @@
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="M4j-yJ-gaN" customClass="GraphView" customModule="Calculator" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="3pc-9B-HzW" appends="YES" id="Vdd-bT-aEZ"/>
+                                    <outletCollection property="gestureRecognizers" destination="tPF-Xq-Cfa" appends="YES" id="zdZ-zH-0h6"/>
+                                    <outletCollection property="gestureRecognizers" destination="R9u-EP-aPm" appends="YES" id="RRD-yd-LXn"/>
+                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -511,6 +517,21 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mWX-Q8-lxT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="3pc-9B-HzW">
+                    <connections>
+                        <action selector="pan:" destination="wFn-se-Xsa" id="wd3-uK-91w"/>
+                    </connections>
+                </panGestureRecognizer>
+                <pinchGestureRecognizer id="tPF-Xq-Cfa">
+                    <connections>
+                        <action selector="scale:" destination="wFn-se-Xsa" id="gH9-t2-jrs"/>
+                    </connections>
+                </pinchGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="R9u-EP-aPm">
+                    <connections>
+                        <action selector="panTo:" destination="wFn-se-Xsa" id="zoc-l3-7jy"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1530" y="1198"/>
         </scene>

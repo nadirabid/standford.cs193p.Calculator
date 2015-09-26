@@ -131,7 +131,7 @@ class AxesDrawer
         path.moveToPoint(CGPoint(x: location.x-dx, y: location.y-dy))
         path.addLineToPoint(CGPoint(x: location.x+dx, y: location.y+dy))
         path.stroke()
-        
+    
         text.drawAnchoredToPoint(location, color: color)
     }
     
