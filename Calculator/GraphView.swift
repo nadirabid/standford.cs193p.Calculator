@@ -14,28 +14,30 @@ protocol GraphViewDataSource: class {
 
 @IBDesignable
 class GraphView: UIView {
-    var origin: CGPoint? = nil {
+    var originTranslation = CGPoint(x: 0, y: 0) {
         didSet { setNeedsDisplay() }
     }
     
-    private func resetOrigin() {
-        origin = CGPoint(x: bounds.width/2, y: bounds.height/2)
+    var minY: Double {
+        return Double((origin.y - bounds.height) / scale)
+    }
+    
+    var maxY: Double {
+        return Double(origin.y / scale)
+    }
+    
+    var origin: CGPoint {
+        return CGPoint(x: bounds.width/2 + originTranslation.x, y: bounds.height/2 + originTranslation.y)
     }
     
     weak var graphViewDataSource: GraphViewDataSource?
     
     @IBInspectable
-    var scale: CGFloat = 1.0 { didSet { setNeedsDisplay() } }
+    var scale: CGFloat = 2.0 { didSet { setNeedsDisplay() } }
     
     override func drawRect(rect: CGRect) {
-        if origin == nil {
-            resetOrigin()
-        }
-        
-        print("contentScaleFactor: \(contentScaleFactor)")
-        
         let axesDrawer = AxesDrawer(contentScaleFactor: contentScaleFactor)
-        axesDrawer.drawAxesInRect(bounds, origin: origin!, pointsPerUnit: scale)
+        axesDrawer.drawAxesInRect(bounds, origin: origin, pointsPerUnit: scale)
         drawProgram()
     }
     
@@ -45,8 +47,8 @@ class GraphView: UIView {
         
             var movedToPoint = false
             
-            for var i: CGFloat = 0; i <= bounds.width * contentScaleFactor; i++ {
-                let origin = self.origin ?? CGPoint(x:0, y:0)
+            for var i: CGFloat = 0; i <= bounds.width*contentScaleFactor; i++ {
+                let origin = self.origin
                 
                 let x = i/contentScaleFactor
                 

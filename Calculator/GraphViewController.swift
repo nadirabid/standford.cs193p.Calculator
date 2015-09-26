@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GraphViewController: UIViewController, GraphViewDataSource {
+class GraphViewController: UIViewController, GraphViewDataSource, UIPopoverPresentationControllerDelegate {
     private var brain = CalculatorBrain()
     
     @IBOutlet weak var graphView: GraphView! {
@@ -22,11 +22,7 @@ class GraphViewController: UIViewController, GraphViewDataSource {
         case .Ended: fallthrough
         case .Changed:
             let translation = gesture.translationInView(graphView)
-            
-            if let origin = graphView.origin {
-                graphView.origin = CGPoint(x: origin.x + translation.x, y: origin.y + translation.y)
-            }
-            
+            graphView.originTranslation = CGPoint(x: graphView.originTranslation.x + translation.x, y: graphView.originTranslation.y + translation.y)
             gesture.setTranslation(CGPointZero, inView: graphView)
         default: break
         }
@@ -38,7 +34,7 @@ class GraphViewController: UIViewController, GraphViewDataSource {
         case .Ended:
             if gesture.numberOfTapsRequired == 2 {
                 let tapLocation = gesture.locationInView(graphView)
-                graphView.origin = tapLocation
+                graphView.originTranslation = CGPoint(x: tapLocation.x - graphView.bounds.width/2, y: tapLocation.y - graphView.bounds.height/2)
             }
         default: break
         }
@@ -75,5 +71,30 @@ class GraphViewController: UIViewController, GraphViewDataSource {
         }
         
         return nil
+    }
+    
+    private struct Stats {
+        static let SegueIdentifier = "Show Graph Stats"
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let identifier = segue.identifier {
+            switch identifier {
+            case Stats.SegueIdentifier:
+                if let graphStatsViewController = segue.destinationViewController as? GraphStatsViewController {
+                    if let popoverPresentationController = graphStatsViewController.popoverPresentationController {
+                        popoverPresentationController.delegate = self
+                    }
+                    
+                    graphStatsViewController.minYText = "\(graphView.minY)"
+                    graphStatsViewController.maxYText = "\(graphView.maxY)"
+                }
+            default: break
+            }
+        }
+    }
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.None
     }
 }
